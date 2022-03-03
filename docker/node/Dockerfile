@@ -1,4 +1,11 @@
 FROM node:lts-alpine
+ARG NODE_DOCKER_PORT
+
+RUN useradd -d /home/node_user -m -s /bin/bash node_user
+USER node_user
+
+HEALTHCHECK CMD curl --fail http://localhost:${NODE_DOCKER_PORT}/ || exit 1
+
 
 WORKDIR /var/www/client
 COPY client/package*.json /var/www/client/
@@ -13,5 +20,5 @@ RUN apk add chromium
 RUN apk add chromium-chromedriver
 ENV CHROME_BIN=/usr/bin/chromium-browser
 
-EXPOSE 4200
+EXPOSE ${NODE_DOCKER_PORT}
 CMD ["ng", "serve", "--host", "0.0.0.0"]

@@ -14,11 +14,11 @@ volumes:
   neo4j-dev-logs:
   neo4j-dev-plugins:
   node_modules:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: ./client/node_modules
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./client/node_modules
 
 networks:
   dev:
@@ -90,12 +90,14 @@ services:
   nginx:
     build:
       context: docker/nginx
+      args:
+        - NGINX_DOCKER_PORT=${NGINX_DOCKER_PORT}
     restart: on-failure
     volumes:
       - ./server:/var/www/server:cached
       - ./docker/nginx/server.conf:/etc/nginx/conf.d/server.conf:cached
     ports:
-      - "8000:80"
+      - "${NGINX_DOCKER_PORT}:80"
     depends_on:
       - php
     networks:
@@ -104,6 +106,8 @@ services:
   php:
     build:
       context: docker/php
+      args:
+        - PHP_DOCKER_PORT=${PHP_DOCKER_PORT}
     restart: on-failure
     volumes:
       - ./server:/var/www/server:cached
@@ -117,9 +121,11 @@ services:
     build:
       context: .
       dockerfile: docker/node/Dockerfile
+      args:
+        - NODE_DOCKER_PORT=${NODE_DOCKER_PORT}
     restart: on-failure
     ports:
-      - "4200:4200"
+      - "${NODE_DOCKER_PORT}:4200"
     volumes:
       - ./client:/var/www/client
       - node_modules:/var/www/client/node_modules

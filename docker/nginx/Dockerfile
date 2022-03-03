@@ -1,4 +1,11 @@
 FROM nginx:alpine
+ARG NGINX_DOCKER_PORT
+
+
+RUN useradd -d /home/nginx_user -m -s /bin/bash nginx_user
+USER nginx_user
+
+HEALTHCHECK CMD curl --fail http://localhost:${NGINX_DOCKER_PORT}/ || exit 1
 
 RUN apk update \
     && apk add git curl vim wget bash acl

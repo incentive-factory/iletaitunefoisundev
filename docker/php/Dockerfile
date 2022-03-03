@@ -1,5 +1,13 @@
 FROM php:8.1-fpm-alpine
 
+ARG PHP_DOCKER_PORT
+
+RUN useradd -d /home/php_user -m -s /bin/bash php_user
+USER php_user
+
+HEALTHCHECK CMD curl --fail http://localhost:${PHP_DOCKER_PORT}/ || exit 1
+
+
 RUN apk update \
     && apk add git \
             curl \
@@ -30,4 +38,4 @@ CMD ["php-fpm", "-F"]
 COPY . /var/www/server
 WORKDIR /var/www/server
 
-EXPOSE 9000
+EXPOSE ${PHP_DOCKER_PORT}
